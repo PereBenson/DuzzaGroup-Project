@@ -1137,15 +1137,15 @@ body.equipment-open .mega-layer {
   gap: 1rem;
   padding-block: clamp(3rem, 8vh, 6rem);
   border-top: 1px solid color-mix(in srgb, var(--color-paper) 16%, transparent);
-  opacity: 0.86;
-  transform: translateY(0.75rem);
-  transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  opacity: var(--chapter-opacity, 0.28);
+  transform: translateY(var(--chapter-y, 18px));
+  transition: opacity 0.16s linear, transform 0.16s linear;
   scroll-margin-top: calc(var(--header-h-small) + 6rem);
 }
 
 .service-chapter.is-active {
-  opacity: 1;
-  transform: none;
+  opacity: var(--chapter-opacity, 1);
+  transform: translateY(var(--chapter-y, 0px));
 }
 
 .service-chapter-rail {
@@ -1422,14 +1422,8 @@ body.equipment-open .mega-layer {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .footer-top {
+  .team-track {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .footer-column a {
-    display: inline-block;
-    min-height: 2.5rem;
-    padding-block: 0.5rem;
   }
 }
 
@@ -2674,177 +2668,127 @@ body[data-page='food'] .page-hero-media img {
   color: var(--color-muted);
 }
 
-.team-wall-section {
-  background: var(--color-warm);
+.team-section {
+  position: relative;
+  padding-block: clamp(5rem, 9vw, 8rem) clamp(5rem, 10vw, 9rem);
+  overflow: clip;
+  background: var(--color-deep);
+  color: #fff;
 }
 
 .team-heading {
-  max-width: 48rem;
-  margin-bottom: 2rem;
+  max-width: 56rem;
+  margin-bottom: clamp(2.5rem, 5vw, 4rem);
 }
 
 .team-heading h2 {
-  font-size: clamp(2.4rem, 5vw, 4.6rem);
+  font-size: clamp(2.5rem, 5vw, 4.8rem);
 }
 
 .team-heading > p:not(.eyebrow) {
-  max-width: 38rem;
+  max-width: 40rem;
   margin-top: 1.1rem;
-  color: var(--color-muted);
+  color: rgb(255 255 255 / 0.78);
   line-height: 1.75;
 }
 
-.team-controls {
-  display: none;
-  align-items: center;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
-}
-
-.team-controls button {
-  display: grid;
-  width: 2.75rem;
-  height: 2.75rem;
-  place-items: center;
-  border: 1px solid var(--color-ink);
-  background: transparent;
-  cursor: pointer;
-  font-size: 1.1rem;
-  transition: background 0.25s ease, color 0.25s ease;
-}
-
-.team-controls button:hover {
-  background: var(--color-ink);
-  color: var(--color-paper);
-}
-
-.team-controls span {
-  min-width: 4.5rem;
-  color: var(--color-muted);
-  font-family: var(--font-display);
-  font-size: 0.9rem;
-  text-align: center;
-}
-
-.team-scroller {
+.team-track-wrap {
+  position: relative;
   min-width: 0;
 }
 
-.team-wall {
+.team-track {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.25rem;
+  padding-right: 0;
+  padding-left: var(--gutter);
 }
 
-.team-role-card {
+.team-member {
+  position: relative;
   display: grid;
   grid-template-rows: auto 1fr;
   min-width: 0;
   overflow: hidden;
-  border: 1px solid var(--color-line);
   background: var(--color-paper);
+  color: var(--color-ink);
+  opacity: var(--member-opacity, 0.2);
+  transform: translateY(var(--member-y, 20px));
+  will-change: opacity, transform;
 }
 
-.team-card-media {
+.team-member-media {
   position: relative;
   aspect-ratio: 4 / 3;
   margin: 0;
   overflow: hidden;
-  background: var(--color-deep);
+  background: #0a1b1d;
 }
 
-.team-card-media::after {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, transparent 58%, rgb(8 12 11 / 0.45) 100%);
-  content: '';
-  pointer-events: none;
-}
-
-.team-card-media img {
+.team-member-media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.7s ease;
 }
 
-.team-role-card:hover .team-card-media img {
-  transform: scale(1.03);
-}
-
-.team-card-index {
+.team-member-media figcaption {
   position: absolute;
-  z-index: 2;
-  top: 0.85rem;
-  left: 0.85rem;
-  display: grid;
-  place-items: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  background: rgb(247 244 238 / 0.92);
-  color: var(--color-ink);
-  font-size: 0.72rem;
+  top: 0.75rem;
+  left: 0.75rem;
+  padding: 0.35rem 0.5rem;
+  background: rgb(8 12 11 / 0.72);
+  color: #fff;
+  font-size: 0.7rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
 }
 
-.team-card-body {
-  display: flex;
-  flex-direction: column;
-  padding: 1.35rem;
+.team-member-body {
+  display: grid;
+  align-content: start;
+  gap: 0.35rem;
+  padding: 1.25rem 1.35rem 1.4rem;
 }
 
-.role-area {
+.team-member-name {
   color: var(--page-accent);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
-.team-card-body h3 {
-  margin-top: 0.6rem;
-  font-size: clamp(1.5rem, 2vw, 2rem);
+.team-member-role {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  line-height: 1.2;
 }
 
-.role-summary {
-  margin-top: 0.7rem;
+.team-member-impact {
   color: var(--color-muted);
-  font-size: 0.95rem;
-  line-height: 1.7;
-}
-
-.role-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-  margin-top: 1.1rem;
-}
-
-.role-tags li {
-  padding: 0.4rem 0.65rem;
-  border: 1px solid var(--color-line);
-  border-radius: 999px;
-  font-size: 0.78rem;
+  font-size: 0.92rem;
+  line-height: 1.65;
 }
 
 .team-note {
   max-width: 58rem;
-  margin-top: 1.5rem;
+  margin-top: clamp(3rem, 6vw, 5rem);
   padding-top: 1.1rem;
-  border-top: 1px solid color-mix(in srgb, var(--color-ink) 20%, transparent);
-  color: var(--color-muted);
+  border-top: 1px solid rgb(255 255 255 / 0.22);
+  color: rgb(255 255 255 / 0.78);
   font-size: 0.95rem;
   line-height: 1.7;
 }
 
 .team-note a {
-  color: var(--color-ink);
+  color: #fff;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
 .team-note a:hover {
-  color: var(--page-accent);
+  color: var(--focus-light);
 }
 
 .contact-card {
@@ -3303,7 +3247,7 @@ body[data-page='food'] .page-hero-media img {
 
 .footer-brand p {
   max-width: 24rem;
-  color: rgb(255 255 255 / 0.78);
+  color: rgb(255 255 255 / 0.68);
 }
 
 .footer-column {
@@ -3334,8 +3278,8 @@ body[data-page='food'] .page-hero-media img {
 
 .footer-note {
   margin-top: 0.8rem;
-  color: rgb(255 255 255 / 0.72);
-  font-size: 0.8rem;
+  color: rgb(255 255 255 / 0.5);
+  font-size: 0.75rem;
 }
 
 .social-icons {
@@ -3361,17 +3305,29 @@ body[data-page='food'] .page-hero-media img {
 .footer-bottom {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 1rem;
-  padding-block: 1.4rem calc(1.4rem + env(safe-area-inset-bottom));
-  border-top: 1px solid rgb(255 255 255 / 0.24);
-  color: rgb(255 255 255 / 0.72);
-  font-size: 0.8rem;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem 1.5rem;
+  padding-block: 1.4rem;
+  border-top: 1px solid rgb(255 255 255 / 0.16);
+  color: rgb(255 255 255 / 0.55);
+  font-size: 0.75rem;
+  text-align: center;
 }
 
 .footer-bottom nav {
   display: flex;
+  justify-content: center;
   gap: 1rem;
+}
+
+.footer-bottom nav a {
+  color: #f0b39d;
+  font-weight: 600;
+}
+
+.footer-bottom nav a:hover {
+  color: #fff;
 }
 
 .whatsapp-fab {
@@ -3579,6 +3535,7 @@ body[data-page='food'] .page-hero-media img {
   inset: 0;
   overflow-x: hidden;
   overflow-y: auto;
+  overscroll-behavior: contain;
   background: var(--color-paper);
   transform: translateX(100%);
   transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
@@ -3671,7 +3628,7 @@ body[data-page='food'] .page-hero-media img {
   min-height: auto;
   padding-block: clamp(2.5rem, 6vw, 5rem);
   border-top: 1px solid var(--color-line);
-  opacity: 0.86;
+  opacity: 0.5;
   transform: translateY(18px);
   transition: opacity 0.45s ease, transform 0.45s ease;
 }
@@ -3762,35 +3719,14 @@ body[data-page='food'] .page-hero-media img {
 }
 
 [data-reveal] {
-  opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  opacity: var(--reveal-opacity, 0.18);
+  transform: translateY(var(--reveal-y, 20px));
+  transition: opacity 0.16s linear, transform 0.16s linear;
 }
 
 [data-reveal].is-visible {
-  opacity: 1;
-  transform: none;
-}
-
-.work-grid .work-item:nth-child(2),
-.content-studio-grid .content-tile:nth-child(2) {
-  transition-delay: 70ms;
-}
-
-.work-grid .work-item:nth-child(3) {
-  transition-delay: 140ms;
-}
-
-.work-grid .work-item:nth-child(4) {
-  transition-delay: 210ms;
-}
-
-.work-grid .work-item:nth-child(5) {
-  transition-delay: 280ms;
-}
-
-.work-grid .work-item:nth-child(6) {
-  transition-delay: 350ms;
+  opacity: var(--reveal-opacity, 1);
+  transform: translateY(var(--reveal-y, 0px));
 }
 
 .content-studio-grid .content-tile:hover {
@@ -3822,29 +3758,38 @@ body[data-page='food'] .page-hero-media img {
     order: -1;
   }
 
-  .team-controls {
+  .team-section {
+    min-height: 260vh;
+    padding-bottom: 0;
+  }
+
+  .team-track-wrap {
+    position: sticky;
+    top: var(--header-h);
     display: flex;
+    height: calc(100vh - var(--header-h));
+    height: calc(100svh - var(--header-h));
+    align-items: center;
+    overflow: hidden;
   }
 
-  .team-scroller {
-    overflow-x: auto;
-    padding-bottom: 1rem;
-    scroll-snap-type: x proximity;
-    scrollbar-width: thin;
-  }
-
-  .team-wall {
+  .team-track {
     display: flex;
-    gap: 1rem;
+    width: max-content;
+    height: min(60vh, 38rem);
+    align-items: stretch;
+    gap: 1.25rem;
   }
 
-  .team-role-card {
-    flex: 0 0 clamp(18rem, 30vw, 24rem);
-    scroll-snap-align: start;
+  .team-member {
+    flex: 0 0 clamp(20rem, 32vw, 28rem);
+    height: 100%;
+    grid-template-rows: minmax(0, 1fr) auto;
   }
 
-  .team-card-media {
-    aspect-ratio: 4 / 5;
+  .team-member-media {
+    aspect-ratio: auto;
+    height: 100%;
   }
 
   .footer-top {
@@ -4125,11 +4070,75 @@ body[data-page='food'] .page-hero-media img {
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: end;
   }
-}
 
-@media (min-width: 1080px) {
-  .team-wall {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+  .home-hero {
+    min-height: 0;
+    margin-top: 0;
+    padding-top: var(--header-h);
+    background: var(--color-paper);
+    color: var(--color-ink);
+  }
+
+  .home-hero-inner {
+    min-height: clamp(30rem, 64vh, 44rem);
+    align-content: center;
+    padding-top: calc(var(--header-h) + 3rem);
+    padding-bottom: clamp(3rem, 6vh, 5rem);
+  }
+
+  .home-hero h1 {
+    color: var(--color-ink);
+    text-shadow: none;
+  }
+
+  .home-hero-sub {
+    color: var(--color-muted);
+    text-shadow: none;
+  }
+
+  .home-hero-cta .button {
+    border-color: var(--color-ink);
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+
+  .home-hero-cta .button:hover {
+    border-color: var(--page-accent);
+    background: var(--page-accent);
+    color: #fff;
+  }
+
+  .home-hero-image {
+    position: relative;
+    inset: auto;
+    z-index: auto;
+    flex: none;
+    width: calc(100% - var(--gutter) * 2);
+    height: clamp(24rem, 52vh, 42rem);
+    min-height: 0;
+    margin: 0 auto clamp(2rem, 4vw, 4rem);
+  }
+
+  .home-hero-image::after {
+    background: linear-gradient(180deg, transparent 62%, rgb(8 12 11 / 0.62));
+  }
+
+  .hero-image-strip {
+    bottom: 1.25rem;
+  }
+
+  .hero-scroll-cue {
+    top: auto;
+    right: var(--gutter);
+    bottom: clamp(26rem, 54vh, 44rem);
+    max-width: 12rem;
+    color: var(--color-muted);
+    font-size: 0.62rem;
+    text-shadow: none;
+  }
+
+  .hero-scroll-cue svg {
+    display: none;
   }
 }
 
@@ -4137,7 +4146,7 @@ body[data-page='food'] .page-hero-media img {
   .home-hero-inner {
     gap: 1.35rem;
     padding-top: clamp(2rem, 5vh, 3rem);
-    padding-bottom: 1.25rem;
+    padding-bottom: clamp(7rem, 14vh, 10rem);
   }
 
   .home-hero h1 {
@@ -4168,6 +4177,9 @@ body[data-page='food'] .page-hero-media img {
   .hero-scroll-cue {
     top: calc(100vh - var(--header-h) - 3rem);
     top: calc(100svh - var(--header-h) - 3rem);
+    right: var(--gutter);
+    bottom: auto;
+    max-width: none;
     font-size: 0.54rem;
     letter-spacing: 0.12em;
   }
@@ -4245,7 +4257,6 @@ body[data-page='food'] .page-hero-media img {
   .menu-toggle,
   .icon-button,
   .service-nav-button,
-  .team-controls button,
   .panel-back {
     border: 1px solid ButtonText;
   }
@@ -4284,8 +4295,33 @@ body[data-page='food'] .page-hero-media img {
   }
 
   [data-reveal],
-  .service-chapter {
+  .service-chapter,
+  .team-member {
     opacity: 1;
     transform: none;
+  }
+
+  .team-track {
+    transform: none !important;
+  }
+
+  .team-section {
+    min-height: 0;
+    padding-bottom: clamp(5rem, 10vw, 9rem);
+  }
+
+  .team-track-wrap {
+    position: relative;
+    top: auto;
+    height: auto;
+    overflow: visible;
+  }
+
+  .team-track {
+    height: auto;
+  }
+
+  .team-member {
+    height: auto;
   }
 }

@@ -152,94 +152,78 @@ function introSection(eyebrowText: string, title: string, copy: string, image?: 
 }
 
 function teamWallSection(): string {
-  const roles = [
+  const people = [
     {
-      area: 'Projects delivery',
+      name: 'Projects desk',
       role: 'Project Coordinator',
-      summary: 'Turns a brief into a workable scope, programme and set of clear next steps.',
-      tools: ['Scope review', 'Programme', 'Stakeholders'],
+      impact: 'Turns a brief into a workable scope, programme and a clear set of next steps.',
       image: '/assets/construction-team.webp',
       alt: 'Engineer in safety equipment on a construction site'
     },
     {
-      area: 'Survey and marine',
+      name: 'Field survey',
       role: 'Survey Field Lead',
-      summary: 'Shapes survey scoping, field coordination and the deliverables that matter to the brief.',
-      tools: ['Survey scoping', 'Field coordination', 'Deliverables'],
+      impact: 'Shapes survey scoping, field coordination and deliverables that suit the brief.',
       image: '/assets/survey-field.webp',
       alt: 'Surveyor operating field survey equipment'
     },
     {
-      area: 'Equipment and supply',
+      name: 'Equipment desk',
       role: 'Equipment Specialist',
-      summary: 'Matches project requirements to the right equipment category, model and support route.',
-      tools: ['Model selection', 'Requirements', 'Procurement'],
+      impact: 'Matches requirements to the right equipment category, model and support route.',
       image: '/assets/side-scan-unit.webp',
       alt: 'Side-scan sonar equipment used for seabed surveys'
     },
     {
-      area: 'Brand and identity',
+      name: 'Brand systems',
       role: 'Brand Systems Designer',
-      summary: 'Builds identity systems that stay consistent across decks, products, campaigns and print.',
-      tools: ['Identity', 'Guidelines', 'Campaign assets'],
+      impact: 'Builds identity systems that stay consistent across decks, products and campaigns.',
       image: '/assets/team-branding.webp',
       alt: 'Professional reviewing digital work on a laptop in a modern office'
     },
     {
-      area: 'Web and product',
+      name: 'Digital studio',
       role: 'Digital Experience Designer',
-      summary: 'Structures journeys, interfaces and responsive pages so every enquiry route is easy to use.',
-      tools: ['Wireframes', 'UI systems', 'Responsive QA'],
+      impact: 'Structures journeys and interfaces so every enquiry route is easy to use.',
       image: '/assets/designer-studio.webp',
       alt: 'Designer working at a desk in a creative studio'
     },
     {
-      area: 'Consumer directions',
+      name: 'Consumer studio',
       role: 'Consumer Direction Lead',
-      summary: 'Guides fashion and food concepts from visual direction through packaging, content and launch.',
-      tools: ['Visual direction', 'Packaging', 'Launch content'],
+      impact: 'Guides fashion and food concepts from visual direction through to launch.',
       image: '/assets/team-food.webp',
       alt: 'Chef in traditional attire outdoors'
     }
   ]
 
   return `
-    <section class="section-pad team-wall-section" aria-labelledby="team-roles-title">
-      <div class="shell">
-        <div class="team-heading" data-reveal>
-          ${eyebrow('Group roles')}
-          <h2 id="team-roles-title">The roles behind the work.</h2>
-          <p>Specialist roles work together across the group. Each one has a clear part to play, from first scope to final handover.</p>
-          <div class="team-controls" aria-label="Team role controls">
-            <button type="button" data-team-prev aria-label="Previous team role"><span aria-hidden="true">←</span></button>
-            <span data-team-status role="status">01 / 0${roles.length}</span>
-            <button type="button" data-team-next aria-label="Next team role"><span aria-hidden="true">→</span></button>
-          </div>
-        </div>
-
-        <div class="team-scroller" data-team-scroller tabindex="0" role="region" aria-label="Team roles">
-          <div class="team-wall">
-            ${roles.map((item, index) => `
-              <article class="team-role-card" data-team-card data-index="${index}">
-                <figure class="team-card-media">
-                  <img src="${item.image}" alt="${escapeHtml(item.alt)}" loading="lazy">
-                  <figcaption class="team-card-index">0${index + 1}</figcaption>
-                </figure>
-                <div class="team-card-body">
-                  <p class="role-area">${escapeHtml(item.area)}</p>
-                  <h3>${escapeHtml(item.role)}</h3>
-                  <p class="role-summary">${escapeHtml(item.summary)}</p>
-                  <ul class="role-tags">
-                    ${item.tools.map((tool) => `<li>${escapeHtml(tool)}</li>`).join('')}
-                  </ul>
-                </div>
-              </article>
-            `).join('')}
-          </div>
-        </div>
-
-        <p class="team-note" data-reveal>Group leadership and specialist roles work across the group's active and developing directions. For introductions, partnerships or press, <a href="/contact/">use the general enquiry route</a>.</p>
+    <section class="team-section" data-team-section aria-labelledby="team-roles-title">
+      <div class="shell team-heading" data-reveal>
+        ${eyebrow('The people')}
+        <h2 id="team-roles-title">Built by people who stay close to the work.</h2>
+        <p>Specialist roles work together across the group. Scroll to meet the people who move each direction forward.</p>
       </div>
+
+      <div class="team-track-wrap" data-team-track-wrap>
+        <div class="team-track" data-team-track role="list">
+          ${people.map((person, index) => `
+            <article class="team-member" data-team-card role="listitem">
+              <figure class="team-member-media">
+                <img src="${person.image}" alt="${escapeHtml(person.alt)}" loading="lazy">
+                <figcaption>${String(index + 1).padStart(2, '0')}</figcaption>
+              </figure>
+              <div class="team-member-body">
+                <p class="team-member-name">${escapeHtml(person.name)}</p>
+                <p class="team-member-role">${escapeHtml(person.role)}</p>
+                <p class="team-member-impact">${escapeHtml(person.impact)}</p>
+              </div>
+            </article>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="shell team-note" data-reveal>Group leadership and specialist roles work across the group's active and developing directions. For introductions, partnerships or press, <a href="/contact/">use the general enquiry route</a>.</div>
     </section>
   `
 }
@@ -675,7 +659,7 @@ function workPage(): string {
 
 function aboutPage(): string {
   return `
-    ${heroSection('About', 'A group built around useful work.', 'DUZZA GROUP connects project delivery, field support, creative services and consumer directions under one practical standard.', '/assets/about-team-meeting.webp', 'Diverse team of professionals collaborating in a bright office', { label: 'Contact the group', href: '/contact/' })}
+    ${heroSection('About', 'A group built around useful work.', 'DUZZA GROUP connects project delivery, field support, creative services and consumer directions under one practical standard.', '/assets/boardroom-team.webp', 'Team discussing a project brief in a boardroom', { label: 'Contact the group', href: '/contact/' })}
 
     <section class="section-pad about-manifesto">
       <div class="shell">
@@ -696,7 +680,7 @@ function aboutPage(): string {
       </div>
     </section>
 
-    ${introSection('Structure', 'Four areas, one point of contact.', 'DUZZA Projects and DUZZA Branding are active service areas. Fashion and Food are consumer directions in development.', '/assets/about-team-collaboration.webp', 'Team of African women collaborating in an office meeting')}
+    ${introSection('Structure', 'Four areas, one point of contact.', 'DUZZA Projects and DUZZA Branding are active service areas. Fashion and Food are consumer directions in development.', '/assets/branding-team.webp', 'Brand team reviewing work together in a studio')}
 
     ${teamWallSection()}
     ${processListSection()}

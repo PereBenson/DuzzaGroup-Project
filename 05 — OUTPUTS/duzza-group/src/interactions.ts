@@ -201,20 +201,41 @@ function initScrollProgress(): void {
 
 function initReveals(): void {
   const elements = query<HTMLElement>('[data-reveal]')
-  if (typeof IntersectionObserver === 'undefined') {
-    elements.forEach((element) => element.classList.add('is-visible'))
-    return
+  if (!elements.length) return
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const clamp = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value))
+  let frame = 0
+
+  const update = (): void => {
+    const viewportHeight = window.innerHeight
+    elements.forEach((element) => {
+      if (reducedMotion) {
+        element.style.setProperty('--reveal-opacity', '1')
+        element.style.setProperty('--reveal-y', '0px')
+        element.classList.add('is-visible')
+        return
+      }
+
+      const rect = element.getBoundingClientRect()
+      const progress = clamp((viewportHeight * 0.94 - rect.top) / (viewportHeight * 0.52), 0.1, 1)
+      element.style.setProperty('--reveal-opacity', progress.toFixed(3))
+      element.style.setProperty('--reveal-y', `${((1 - progress) * 18).toFixed(1)}px`)
+      element.classList.toggle('is-visible', progress > 0.35)
+    })
   }
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (!entry.isIntersecting) return
-      entry.target.classList.add('is-visible')
-      observer.unobserve(entry.target)
+  const onScroll = (): void => {
+    if (frame) return
+    frame = window.requestAnimationFrame(() => {
+      frame = 0
+      update()
     })
-  }, { threshold: 0.12, rootMargin: '0px 0px -48px 0px' })
+  }
 
-  elements.forEach((element) => observer.observe(element))
+  window.addEventListener('scroll', onScroll, { passive: true })
+  window.addEventListener('resize', update)
+  update()
 }
 
 function initImageZoom(): void {
@@ -282,6 +303,7 @@ function initServicesScroll(): void {
 
   let currentIndex = -1
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const clamp = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value))
 
   const activate = (index: number): void => {
     const next = Math.max(0, Math.min(index, items.length - 1))
@@ -325,6 +347,22 @@ function initServicesScroll(): void {
     progress.style.transform = `scaleX(${value})`
   }
 
+  const updateFades = (): void => {
+    const viewportHeight = window.innerHeight
+    items.forEach((item) => {
+      if (reducedMotion) {
+        item.style.setProperty('--chapter-opacity', '1')
+        item.style.setProperty('--chapter-y', '0px')
+        return
+      }
+
+      const rect = item.getBoundingClientRect()
+      const progress = clamp((viewportHeight * 0.96 - rect.top) / (viewportHeight * 0.54), 0.16, 1)
+      item.style.setProperty('--chapter-opacity', progress.toFixed(3))
+      item.style.setProperty('--chapter-y', `${((1 - progress) * 22).toFixed(1)}px`)
+    })
+  }
+
   const hasObserver = typeof IntersectionObserver !== 'undefined'
   let frame = 0
 
@@ -333,6 +371,7 @@ function initServicesScroll(): void {
     frame = window.requestAnimationFrame(() => {
       frame = 0
       updateProgress()
+      updateFades()
       if (hasObserver) return
 
       const midpoint = window.innerHeight * 0.5
@@ -372,57 +411,67 @@ function initServicesScroll(): void {
   window.addEventListener('resize', handleScroll)
   activate(0)
   updateProgress()
+  updateFades()
 }
 
-function initTeamScroller(): void {
-  const scroller = document.querySelector<HTMLElement>('[data-team-scroller]')
-  if (!scroller) return
+function initTeamScroll(): void {
+  const section = document.querySelector<HTMLElement>('[data-team-section]')
+  const track = document.querySelector<HTMLElement>('[data-team-track]')
+  if (!section || !track) return
 
-  const cards = query<HTMLElement>('[data-team-card]', scroller)
-  const previous = document.querySelector<HTMLButtonElement>('[data-team-prev]')
-  const next = document.querySelector<HTMLButtonElement>('[data-team-next]')
-  const status = document.querySelector<HTMLElement>('[data-team-status]')
+  const cards = query<HTMLElement>('[data-team-card]', track)
   if (!cards.length) return
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const clamp = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value))
   let frame = 0
-  let activeIndex = 0
 
   const update = (): void => {
-    const center = scroller.getBoundingClientRect().left + scroller.clientWidth * 0.5
-    let closest = 0
-    let distance = Number.POSITIVE_INFINITY
-    cards.forEach((card, index) => {
+    if (reducedMotion) {
+      cards.forEach((card) => {
+        card.style.setProperty('--member-opacity', '1')
+        card.style.setProperty('--member-y', '0px')
+      })
+      return
+    }
+
+    const viewportWidth = window.innerWidth
+    const viewportHeight = window.innerHeight
+    const horizontalLayout = window.matchMedia('(min-width: 768px)').matches
+
+    if (horizontalLayout) {
+      const rect = section.getBoundingClientRect()
+      const scrollable = Math.max(1, section.offsetHeight - viewportHeight)
+      const progress = clamp(-rect.top / scrollable, 0, 1)
+      const cardWidth = cards[0].getBoundingClientRect().width
+      const overflow = Math.max(0, track.scrollWidth - viewportWidth + viewportWidth * 0.04 - cardWidth * 0.35)
+      track.style.transform = `translate3d(${-overflow * progress}px, 0, 0)`
+    } else {
+      track.style.transform = ''
+    }
+
+    cards.forEach((card) => {
       const rect = card.getBoundingClientRect()
-      const itemDistance = Math.abs(rect.left + rect.width * 0.5 - center)
-      if (itemDistance < distance) {
-        distance = itemDistance
-        closest = index
-      }
+      const cardCenter = rect.left + rect.width * 0.5
+      const horizontal = horizontalLayout
+        ? clamp(1 - Math.abs(cardCenter - viewportWidth * 0.48) / (viewportWidth * 0.72), 0.2, 1)
+        : 1
+      const vertical = clamp((viewportHeight * 0.94 - rect.top) / (viewportHeight * 0.52), 0.2, 1)
+      const opacity = horizontal * vertical
+      card.style.setProperty('--member-opacity', opacity.toFixed(3))
+      card.style.setProperty('--member-y', `${((1 - opacity) * 20).toFixed(1)}px`)
     })
-    activeIndex = closest
-    if (status) status.textContent = `${String(closest + 1).padStart(2, '0')} / ${String(cards.length).padStart(2, '0')}`
   }
 
-  const goTo = (index: number): void => {
-    const target = (index + cards.length) % cards.length
-    cards[target].scrollIntoView({
-      behavior: reducedMotion ? 'auto' : 'smooth',
-      block: 'nearest',
-      inline: 'center'
-    })
-    update()
-  }
-
-  previous?.addEventListener('click', () => goTo(activeIndex - 1))
-  next?.addEventListener('click', () => goTo(activeIndex + 1))
-  scroller.addEventListener('scroll', () => {
+  const onScroll = (): void => {
     if (frame) return
     frame = window.requestAnimationFrame(() => {
       frame = 0
       update()
     })
-  }, { passive: true })
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true })
   window.addEventListener('resize', update)
   update()
 }
@@ -439,7 +488,11 @@ function initEquipmentPanels(): void {
   let currentId = ''
   let lastFocused: HTMLElement | null = null
 
-  const background = [document.querySelector<HTMLElement>('[data-site-header]'), document.querySelector<HTMLElement>('[data-page-content]'), document.querySelector<HTMLElement>('[data-footer-root]')]
+  const main = document.querySelector<HTMLElement>('[data-page-content]')
+  const mainSiblings = main
+    ? Array.from(main.children).filter((child): child is HTMLElement => child instanceof HTMLElement && child !== overlay)
+    : []
+  const background = [document.querySelector<HTMLElement>('[data-site-header]'), document.querySelector<HTMLElement>('[data-footer-root]'), ...mainSiblings]
     .filter((element): element is HTMLElement => Boolean(element))
 
   const setBackgroundInert = (value: boolean): void => {
@@ -581,7 +634,7 @@ export function initInteractions(): void {
   initReveals()
   initImageZoom()
   initServicesScroll()
-  initTeamScroller()
+  initTeamScroll()
   initEquipmentPanels()
   initActiveNav()
 
