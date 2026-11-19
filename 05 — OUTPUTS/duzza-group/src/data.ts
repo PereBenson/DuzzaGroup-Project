@@ -2,6 +2,7 @@ export type Business = {
   title: string
   eyebrow: string
   description: string
+  menuSummary: string
   href: string
   status: 'active' | 'soon'
 }
@@ -17,6 +18,21 @@ export type Showcase = Service & {
   image: string
   label: string
   note?: string
+}
+
+export type ServiceChapter = {
+  id: string
+  subsidiary: string
+  status: string
+  label: string
+  title: string
+  shortTitle: string
+  description: string
+  points: string[]
+  image: string
+  imageAlt: string
+  href: string
+  action: string
 }
 
 export type EquipmentCategory = {
@@ -104,6 +120,7 @@ export const businesses: Business[] = [
     title: 'DUZZA Projects',
     eyebrow: 'Engineering and field services',
     description: 'Project support across engineering, construction, oil and gas, marine survey, equipment hire and general supply.',
+    menuSummary: 'Engineering, survey, equipment and supply.',
     href: '/businesses/projects/',
     status: 'active'
   },
@@ -111,6 +128,7 @@ export const businesses: Business[] = [
     title: 'DUZZA Branding',
     eyebrow: 'Brand and creative services',
     description: 'Identity systems, executive branding, websites, app design, UGC content, AI product imagery, photography and branded merchandise.',
+    menuSummary: 'Identity, digital, content and campaigns.',
     href: '/businesses/branding/',
     status: 'active'
   },
@@ -118,6 +136,7 @@ export const businesses: Business[] = [
     title: 'Fashion',
     eyebrow: 'Consumer direction in development',
     description: 'Boutique clothing, English and Ankara pieces, and customised branded apparel concepts.',
+    menuSummary: 'Boutique, Ankara and branded apparel.',
     href: '/businesses/fashion/',
     status: 'soon'
   },
@@ -125,6 +144,7 @@ export const businesses: Business[] = [
     title: 'Food',
     eyebrow: 'Consumer direction in development',
     description: 'Bakery, pastry, confectionery and eatery concepts taking shape for future release.',
+    menuSummary: 'Bakery, menus and eatery concepts.',
     href: '/businesses/food/',
     status: 'soon'
   }
@@ -162,6 +182,93 @@ export const homeProjects: Showcase[] = [
     image: '/assets/website-mockup.webp',
     description: 'Brand systems, digital products and campaign content designed to work together across every customer touchpoint.',
     points: ['Identity systems', 'Web and app design', 'Campaign content', 'Product photography']
+  }
+]
+
+export const homeServiceChapters: ServiceChapter[] = [
+  {
+    id: 'engineering-construction',
+    subsidiary: 'DUZZA Projects',
+    status: 'Active service area',
+    label: 'Built environment',
+    title: 'Engineering and construction',
+    shortTitle: 'Engineering',
+    description: 'From site requirements to coordinated delivery, we shape practical support for engineering and construction work.',
+    points: ['Scope and site requirements', 'Engineering support', 'Construction coordination', 'General supply where required'],
+    image: '/assets/construction-team.webp',
+    imageAlt: 'Engineer in safety equipment on a construction site',
+    href: '/businesses/projects/',
+    action: 'Explore projects'
+  },
+  {
+    id: 'marine-survey',
+    subsidiary: 'DUZZA Projects',
+    status: 'Active service area',
+    label: 'Survey and marine',
+    title: 'Marine and hydrographic survey',
+    shortTitle: 'Survey',
+    description: 'Survey coordination and hydro-spatial support for marine projects, with deliverables defined around the brief.',
+    points: ['Survey scoping', 'Hydro-spatial coordination', 'Marine project support', 'Equipment requirement review'],
+    image: '/assets/survey-vessel-fugro.webp',
+    imageAlt: 'Hydrographic survey vessel at sea',
+    href: '/businesses/projects/',
+    action: 'Explore survey work'
+  },
+  {
+    id: 'equipment-hire',
+    subsidiary: 'DUZZA Projects',
+    status: 'Active service area',
+    label: 'Field-ready support',
+    title: 'Equipment hire and supply',
+    shortTitle: 'Equipment',
+    description: 'Requirements-led access to survey, positioning and marine support equipment, with each catalogue item clearly detailed.',
+    points: ['Category selection', 'Exact equipment selection', 'Project-specific requirements', 'Procurement support'],
+    image: '/assets/side-scan-unit.webp',
+    imageAlt: 'Side-scan sonar equipment used for seabed surveys',
+    href: '/projects/equipment/',
+    action: 'View equipment catalogue'
+  },
+  {
+    id: 'brand-digital',
+    subsidiary: 'DUZZA Branding',
+    status: 'Active service area',
+    label: 'Identity and digital',
+    title: 'Brand systems and digital',
+    shortTitle: 'Branding',
+    description: 'Brand systems, digital products and campaign content designed to work together across every customer touchpoint.',
+    points: ['Identity systems and guidelines', 'Wireframes and user journeys', 'Interface design', 'Responsive front-end development and QA', 'UGC direction and shot planning', 'AI-assisted image development'],
+    image: '/assets/website-mockup.webp',
+    imageAlt: 'Editorial architecture website concept for a creative studio',
+    href: '/businesses/branding/',
+    action: 'Explore branding'
+  },
+  {
+    id: 'fashion-direction',
+    subsidiary: 'Fashion',
+    status: 'In development',
+    label: 'Boutique and Ankara',
+    title: 'Fashion direction',
+    shortTitle: 'Fashion',
+    description: 'Boutique clothing, English and Ankara pieces, and customised branded apparel brought together through distinctive textiles and a clear point of view.',
+    points: ['Silhouette direction', 'Fabric and finish considerations', 'Brand-led detailing', 'Ankara and print direction', 'Modern cuts for women and men', 'Artwork preparation'],
+    image: '/assets/fashion-woman-ankara.webp',
+    imageAlt: 'Woman wearing a vibrant Ankara outfit',
+    href: '/businesses/fashion/',
+    action: 'Explore fashion'
+  },
+  {
+    id: 'food-direction',
+    subsidiary: 'Food',
+    status: 'In development',
+    label: 'African and intercontinental',
+    title: 'Food direction',
+    shortTitle: 'Food',
+    description: 'West African cooking, bakery, pastry, confectionery and future eatery ideas under a clear brand expression.',
+    points: ['Menu direction', 'Presentation and packaging', 'Brand application', 'Range direction', 'Packaging concepts', 'Experience direction'],
+    image: '/assets/african-jollof.webp',
+    imageAlt: 'Jollof rice plated with garnish',
+    href: '/businesses/food/',
+    action: 'Explore food'
   }
 ]
 

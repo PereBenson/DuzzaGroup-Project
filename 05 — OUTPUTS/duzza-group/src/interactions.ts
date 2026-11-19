@@ -6,6 +6,7 @@ function setMega(name: string | null, open: boolean): void {
   query<HTMLElement>('[data-mega-panel]').forEach((panel) => {
     const active = open && panel.dataset.mega === name
     panel.setAttribute('aria-hidden', active ? 'false' : 'true')
+    panel.toggleAttribute('inert', !active)
     panel.classList.toggle('is-open', active)
   })
 
@@ -265,51 +266,165 @@ function initImageZoom(): void {
   })
 }
 
-function initProjectsScroll(): void {
-  const section = document.querySelector<HTMLElement>('[data-projects-scroll]')
+function initServicesScroll(): void {
+  const section = document.querySelector<HTMLElement>('[data-services-scroll]')
   if (!section) return
 
-  const items = query<HTMLElement>('[data-scroll-item]', section)
+  const items = query<HTMLElement>('[data-service-item]', section)
   const images = query<HTMLElement>('[data-scroll-image]', section)
+  const jumps = query<HTMLButtonElement>('[data-scroll-jump]', section)
+  const steps = query<HTMLButtonElement>('[data-scroll-step]', section)
   const count = section.querySelector<HTMLElement>('[data-scroll-count]')
   const title = section.querySelector<HTMLElement>('[data-scroll-title]')
+  const subsidiary = section.querySelector<HTMLElement>('[data-scroll-subsidiary]')
+  const progress = section.querySelector<HTMLElement>('[data-scroll-progress]')
   if (!items.length) return
 
+  let currentIndex = -1
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
   const activate = (index: number): void => {
-    items.forEach((item, itemIndex) => item.classList.toggle('is-active', itemIndex === index))
-    images.forEach((image, imageIndex) => image.classList.toggle('is-active', imageIndex === index))
-    if (count) count.textContent = String(index + 1).padStart(2, '0')
-    if (title) title.textContent = items[index].querySelector('h3')?.textContent ?? ''
+    const next = Math.max(0, Math.min(index, items.length - 1))
+    if (next === currentIndex) return
+    currentIndex = next
+
+    items.forEach((item, itemIndex) => item.classList.toggle('is-active', itemIndex === next))
+    images.forEach((image, imageIndex) => image.classList.toggle('is-active', imageIndex === next))
+    jumps.forEach((button, buttonIndex) => {
+      button.classList.toggle('is-active', buttonIndex === next)
+      button.setAttribute('aria-current', buttonIndex === next ? 'step' : 'false')
+    })
+
+    const activeItem = items[next]
+    if (count) count.textContent = String(next + 1).padStart(2, '0')
+    if (title) title.textContent = activeItem.querySelector('h3')?.textContent ?? ''
+    if (subsidiary) subsidiary.textContent = activeItem.querySelector('.service-chapter-kicker span')?.textContent ?? ''
   }
 
-  if (typeof IntersectionObserver === 'undefined') {
-    window.addEventListener('scroll', () => {
-      const midpoint = window.innerHeight / 2
+  const goTo = (index: number): void => {
+    const next = (index + items.length) % items.length
+    activate(next)
+    items[next].scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'center' })
+  }
+
+  jumps.forEach((button) => {
+    button.addEventListener('click', () => goTo(Number(button.dataset.scrollJump ?? 0)))
+  })
+
+  steps.forEach((button) => {
+    button.addEventListener('click', () => goTo(currentIndex + Number(button.dataset.scrollStep ?? 1)))
+  })
+
+  const updateProgress = (): void => {
+    if (!progress) return
+    const rect = section.getBoundingClientRect()
+    const midpoint = window.innerHeight * 0.5
+    const start = rect.top + window.scrollY - midpoint
+    const end = rect.bottom + window.scrollY - midpoint
+    const value = Math.min(1, Math.max(0, (window.scrollY - start) / Math.max(1, end - start)))
+    progress.style.transform = `scaleX(${value})`
+  }
+
+  const hasObserver = typeof IntersectionObserver !== 'undefined'
+  let frame = 0
+
+  const handleScroll = (): void => {
+    if (frame) return
+    frame = window.requestAnimationFrame(() => {
+      frame = 0
+      updateProgress()
+      if (hasObserver) return
+
+      const midpoint = window.innerHeight * 0.5
       let closest = 0
       let distance = Number.POSITIVE_INFINITY
       items.forEach((item, index) => {
         const rect = item.getBoundingClientRect()
-        const itemDistance = Math.abs(rect.top + rect.height / 2 - midpoint)
+        const itemDistance = Math.abs(rect.top + rect.height * 0.5 - midpoint)
         if (itemDistance < distance) {
           distance = itemDistance
           closest = index
         }
       })
       activate(closest)
-    }, { passive: true })
-    return
+    })
   }
 
-  const observer = new IntersectionObserver((entries) => {
-    const visible = entries.filter((entry) => entry.isIntersecting)
-    if (!visible.length) return
-    visible.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
-    const target = visible[0].target as HTMLElement
-    const index = Number(target.dataset.index ?? 0)
-    if (!Number.isNaN(index)) activate(index)
-  }, { rootMargin: '-44% 0px -44% 0px', threshold: 0 })
+  if (hasObserver) {
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries.filter((entry) => entry.isIntersecting)
+      if (!visible.length) return
+      const midpoint = window.innerHeight * 0.5
+      visible.sort((a, b) => {
+        const aCenter = a.boundingClientRect.top + a.boundingClientRect.height * 0.5
+        const bCenter = b.boundingClientRect.top + b.boundingClientRect.height * 0.5
+        return Math.abs(aCenter - midpoint) - Math.abs(bCenter - midpoint)
+      })
+      const target = visible[0].target as HTMLElement
+      const index = Number(target.dataset.index ?? 0)
+      if (!Number.isNaN(index)) activate(index)
+    }, { rootMargin: '-32% 0px -32% 0px', threshold: 0 })
 
-  items.forEach((item) => observer.observe(item))
+    items.forEach((item) => observer.observe(item))
+  }
+
+  window.addEventListener('scroll', handleScroll, { passive: true })
+  window.addEventListener('resize', handleScroll)
+  activate(0)
+  updateProgress()
+}
+
+function initTeamScroller(): void {
+  const scroller = document.querySelector<HTMLElement>('[data-team-scroller]')
+  if (!scroller) return
+
+  const cards = query<HTMLElement>('[data-team-card]', scroller)
+  const previous = document.querySelector<HTMLButtonElement>('[data-team-prev]')
+  const next = document.querySelector<HTMLButtonElement>('[data-team-next]')
+  const status = document.querySelector<HTMLElement>('[data-team-status]')
+  if (!cards.length) return
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  let frame = 0
+  let activeIndex = 0
+
+  const update = (): void => {
+    const center = scroller.getBoundingClientRect().left + scroller.clientWidth * 0.5
+    let closest = 0
+    let distance = Number.POSITIVE_INFINITY
+    cards.forEach((card, index) => {
+      const rect = card.getBoundingClientRect()
+      const itemDistance = Math.abs(rect.left + rect.width * 0.5 - center)
+      if (itemDistance < distance) {
+        distance = itemDistance
+        closest = index
+      }
+    })
+    activeIndex = closest
+    if (status) status.textContent = `${String(closest + 1).padStart(2, '0')} / ${String(cards.length).padStart(2, '0')}`
+  }
+
+  const goTo = (index: number): void => {
+    const target = (index + cards.length) % cards.length
+    cards[target].scrollIntoView({
+      behavior: reducedMotion ? 'auto' : 'smooth',
+      block: 'nearest',
+      inline: 'center'
+    })
+    update()
+  }
+
+  previous?.addEventListener('click', () => goTo(activeIndex - 1))
+  next?.addEventListener('click', () => goTo(activeIndex + 1))
+  scroller.addEventListener('scroll', () => {
+    if (frame) return
+    frame = window.requestAnimationFrame(() => {
+      frame = 0
+      update()
+    })
+  }, { passive: true })
+  window.addEventListener('resize', update)
+  update()
 }
 
 function initEquipmentPanels(): void {
@@ -323,6 +438,13 @@ function initEquipmentPanels(): void {
   const panelLabel = panel.querySelector<HTMLElement>('[data-equipment-panel-label]')
   let currentId = ''
   let lastFocused: HTMLElement | null = null
+
+  const background = [document.querySelector<HTMLElement>('[data-site-header]'), document.querySelector<HTMLElement>('[data-page-content]'), document.querySelector<HTMLElement>('[data-footer-root]')]
+    .filter((element): element is HTMLElement => Boolean(element))
+
+  const setBackgroundInert = (value: boolean): void => {
+    background.forEach((element) => element.toggleAttribute('inert', value))
+  }
 
   const activateStory = (view: HTMLElement, index: number): void => {
     const items = query<HTMLElement>('[data-story-item]', view)
@@ -374,7 +496,8 @@ function initEquipmentPanels(): void {
     overlay.classList.add('is-open')
     panel.classList.add('is-open')
     document.body.classList.add('equipment-open')
-    if (panelLabel) panelLabel.textContent = view.querySelector('h2')?.textContent ?? 'Equipment catalogue'
+    setBackgroundInert(true)
+    if (panelLabel) panelLabel.textContent = view.querySelector('.eyebrow')?.textContent ?? 'Equipment catalogue'
     panel.scrollTop = 0
     activateStory(view, 0)
     if (writeHistory) writeUrl(id)
@@ -390,6 +513,7 @@ function initEquipmentPanels(): void {
     overlay.classList.remove('is-open')
     panel.classList.remove('is-open')
     document.body.classList.remove('equipment-open')
+    setBackgroundInert(false)
     if (writeHistory) writeUrl(null)
     lastFocused?.focus()
   }
@@ -404,6 +528,21 @@ function initEquipmentPanels(): void {
   })
 
   closeButton?.addEventListener('click', () => closePanel())
+  panel.addEventListener('keydown', (event) => {
+    if (event.key !== 'Tab') return
+    const focusables = query<HTMLElement>('a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])', panel)
+      .filter((element) => !element.closest('[inert]') && element.getClientRects().length > 0)
+    if (!focusables.length) return
+    const first = focusables[0]
+    const last = focusables[focusables.length - 1]
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault()
+      last.focus()
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault()
+      first.focus()
+    }
+  })
   overlay.addEventListener('click', (event) => {
     if (event.target === overlay) closePanel()
   })
@@ -441,7 +580,8 @@ export function initInteractions(): void {
   initScrollProgress()
   initReveals()
   initImageZoom()
-  initProjectsScroll()
+  initServicesScroll()
+  initTeamScroller()
   initEquipmentPanels()
   initActiveNav()
 

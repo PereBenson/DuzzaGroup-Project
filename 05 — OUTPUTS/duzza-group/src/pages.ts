@@ -2,11 +2,13 @@
   buttonLink,
   editorialGallery,
   equipmentPanels,
+  escapeHtml,
   eyebrow,
   imageFrame,
   processList,
   sectionHeading,
   serviceCards,
+  servicesScrollSection,
   workGrid
 } from './components'
 import type { WorkTile } from './components'
@@ -111,6 +113,22 @@ function heroSection(
   `
 }
 
+function textHeroSection(eyebrowText: string, title: string, copy: string, primary: HeroAction, secondary?: HeroAction): string {
+  return `
+    <section class="page-intro page-intro-plain" aria-labelledby="page-hero-title">
+      <div class="shell" data-reveal>
+        ${eyebrow(eyebrowText)}
+        <h1 id="page-hero-title">${title}</h1>
+        <p class="lede">${copy}</p>
+        <div class="hero-actions">
+          ${buttonLink(primary.label, primary.href)}
+          ${secondary ? buttonLink(secondary.label, secondary.href, 'outline') : ''}
+        </div>
+      </div>
+    </section>
+  `
+}
+
 function ctaBand(title: string, copy: string, action: HeroAction, secondary?: HeroAction): string {
   return `
     <section class="cta-band">
@@ -134,57 +152,93 @@ function introSection(eyebrowText: string, title: string, copy: string, image?: 
 }
 
 function teamWallSection(): string {
-  const teams = [
+  const roles = [
     {
-      area: 'Projects',
-      title: 'Projects & field teams',
-      copy: 'Engineering, construction, survey, equipment and supply work coordinated around the requirement from first brief to handover.',
-      image: '/assets/team-projects.webp',
-      alt: 'Engineer in safety equipment reviewing work on a construction site'
+      area: 'Projects delivery',
+      role: 'Project Coordinator',
+      summary: 'Turns a brief into a workable scope, programme and set of clear next steps.',
+      tools: ['Scope review', 'Programme', 'Stakeholders'],
+      image: '/assets/construction-team.webp',
+      alt: 'Engineer in safety equipment on a construction site'
     },
     {
-      area: 'Branding',
-      title: 'Branding & digital',
-      copy: 'Identity, web, app and campaign work built as one visual system across every customer touchpoint.',
+      area: 'Survey and marine',
+      role: 'Survey Field Lead',
+      summary: 'Shapes survey scoping, field coordination and the deliverables that matter to the brief.',
+      tools: ['Survey scoping', 'Field coordination', 'Deliverables'],
+      image: '/assets/survey-field.webp',
+      alt: 'Surveyor operating field survey equipment'
+    },
+    {
+      area: 'Equipment and supply',
+      role: 'Equipment Specialist',
+      summary: 'Matches project requirements to the right equipment category, model and support route.',
+      tools: ['Model selection', 'Requirements', 'Procurement'],
+      image: '/assets/side-scan-unit.webp',
+      alt: 'Side-scan sonar equipment used for seabed surveys'
+    },
+    {
+      area: 'Brand and identity',
+      role: 'Brand Systems Designer',
+      summary: 'Builds identity systems that stay consistent across decks, products, campaigns and print.',
+      tools: ['Identity', 'Guidelines', 'Campaign assets'],
       image: '/assets/team-branding.webp',
       alt: 'Professional reviewing digital work on a laptop in a modern office'
     },
     {
-      area: 'Fashion',
-      title: 'Fashion direction',
-      copy: 'Boutique clothing, Ankara pieces and customised apparel concepts shaped with a clear point of view.',
-      image: '/assets/fashion-woman-ankara.webp',
-      alt: 'Woman wearing a vibrant Ankara outfit'
+      area: 'Web and product',
+      role: 'Digital Experience Designer',
+      summary: 'Structures journeys, interfaces and responsive pages so every enquiry route is easy to use.',
+      tools: ['Wireframes', 'UI systems', 'Responsive QA'],
+      image: '/assets/designer-studio.webp',
+      alt: 'Designer working at a desk in a creative studio'
     },
     {
-      area: 'Food',
-      title: 'Food direction',
-      copy: 'Bakery, pastry, confectionery and eatery concepts developed around hospitality and everyday enjoyment.',
+      area: 'Consumer directions',
+      role: 'Consumer Direction Lead',
+      summary: 'Guides fashion and food concepts from visual direction through packaging, content and launch.',
+      tools: ['Visual direction', 'Packaging', 'Launch content'],
       image: '/assets/team-food.webp',
       alt: 'Chef in traditional attire outdoors'
     }
   ]
 
   return `
-    <section class="section-pad team-wall-section">
+    <section class="section-pad team-wall-section" aria-labelledby="team-roles-title">
       <div class="shell">
-        ${sectionHeading('Group teams', 'The people behind the work.', 'Specialist teams work across projects, branding, fashion and food, with each area focused on practical delivery and a considered result.')}
-        <div class="team-wall">
-          ${teams.map((team, index) => `
-            <article class="team-card" data-reveal>
-              <figure class="team-card-media">
-                <img src="${team.image}" alt="${team.alt}" loading="lazy">
-                <span class="team-card-index">0${index + 1}</span>
-              </figure>
-              <div class="team-card-body">
-                ${eyebrow(team.area)}
-                <h3>${team.title}</h3>
-                <p>${team.copy}</p>
-              </div>
-            </article>
-          `).join('')}
+        <div class="team-heading" data-reveal>
+          ${eyebrow('Group roles')}
+          <h2 id="team-roles-title">The roles behind the work.</h2>
+          <p>Specialist roles work together across the group. Each one has a clear part to play, from first scope to final handover.</p>
+          <div class="team-controls" aria-label="Team role controls">
+            <button type="button" data-team-prev aria-label="Previous team role"><span aria-hidden="true">←</span></button>
+            <span data-team-status role="status">01 / 0${roles.length}</span>
+            <button type="button" data-team-next aria-label="Next team role"><span aria-hidden="true">→</span></button>
+          </div>
         </div>
-        <p class="team-note" data-reveal>Group leadership and specialist teams work across the group's active and developing directions. For introductions, partnerships or press, <a href="/contact/">use the general enquiry route</a>.</p>
+
+        <div class="team-scroller" data-team-scroller tabindex="0" role="region" aria-label="Team roles">
+          <div class="team-wall">
+            ${roles.map((item, index) => `
+              <article class="team-role-card" data-team-card data-index="${index}">
+                <figure class="team-card-media">
+                  <img src="${item.image}" alt="${escapeHtml(item.alt)}" loading="lazy">
+                  <figcaption class="team-card-index">0${index + 1}</figcaption>
+                </figure>
+                <div class="team-card-body">
+                  <p class="role-area">${escapeHtml(item.area)}</p>
+                  <h3>${escapeHtml(item.role)}</h3>
+                  <p class="role-summary">${escapeHtml(item.summary)}</p>
+                  <ul class="role-tags">
+                    ${item.tools.map((tool) => `<li>${escapeHtml(tool)}</li>`).join('')}
+                  </ul>
+                </div>
+              </article>
+            `).join('')}
+          </div>
+        </div>
+
+        <p class="team-note" data-reveal>Group leadership and specialist roles work across the group's active and developing directions. For introductions, partnerships or press, <a href="/contact/">use the general enquiry route</a>.</p>
       </div>
     </section>
   `
@@ -244,6 +298,8 @@ function homePage(): string {
         ${workGrid(selectedWork, '', false)}
       </div>
     </section>
+
+    ${servicesScrollSection()}
 
     ${ctaBand('Tell us what the work needs.', 'Send a clear brief and we will scope the services, deliverables and next steps around it.', { label: 'Request a quote', href: '/enquiries/projects/' }, { label: 'Start a branding brief', href: '/enquiries/branding/' })}
   `
@@ -650,7 +706,7 @@ function aboutPage(): string {
 
 function contactPage(): string {
   return `
-    ${heroSection('Contact', 'Start with the right route.', 'Choose a focused enquiry form so the useful detail is captured from the beginning.', '/assets/creative-studio.webp', 'Creative professional reviewing notes in a studio', { label: 'General enquiry', href: '/enquiries/general/' })}
+    ${textHeroSection('Contact', 'Start with the right route.', 'Choose a focused enquiry form so the useful detail is captured from the beginning.', { label: 'General enquiry', href: '/enquiries/general/' })}
 
     <section class="section-pad">
       <div class="shell contact-grid">

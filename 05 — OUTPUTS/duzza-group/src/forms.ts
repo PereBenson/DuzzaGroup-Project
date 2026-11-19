@@ -49,7 +49,7 @@ function renderPhoneField(field: FormField): string {
           <input id="${id}" name="${field.name}" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="802 123 4567" aria-describedby="${id}-hint ${id}-error" aria-invalid="false" data-required="${field.required ? 'true' : 'false'}" data-phone-input>
         </div>
         <div class="phone-popover" data-phone-popover hidden>
-          <input class="phone-search" type="search" placeholder="Search country" aria-label="Search country" aria-controls="${id}-list" aria-autocomplete="list" aria-expanded="false" data-phone-search>
+          <input class="phone-search" type="search" role="combobox" aria-haspopup="listbox" placeholder="Search country" aria-label="Search country" aria-controls="${id}-list" aria-autocomplete="list" aria-expanded="false" data-phone-search>
           <ul class="phone-list" id="${id}-list" role="listbox" aria-label="Countries" data-phone-list></ul>
         </div>
       </div>
@@ -178,7 +178,7 @@ function renderEquipmentQuestion(question: EquipmentQuestion, index: number): st
 function renderForm(config: FormConfig): string {
   return `
     <form class="enquiry-form" data-enquiry-form data-form-id="${config.id}" novalidate>
-      <div class="error-summary" role="alert" data-error-summary></div>
+      <div class="error-summary" role="alert" tabindex="-1" data-error-summary></div>
       <div class="form-grid">
         ${config.fields.map(renderField).join('')}
         <div class="field field--full dynamic-equipment-fields" data-dynamic-equipment-fields></div>
@@ -632,8 +632,8 @@ function initForm(form: HTMLFormElement): void {
         errorSummary.textContent = `Please check ${errorCount} field${errorCount === 1 ? '' : 's'} before continuing.`
         errorSummary.dataset.visible = 'true'
       }
-      const firstInvalid = form.querySelector<HTMLElement>('[aria-invalid="true"], [data-visible="true"]')
-      firstInvalid?.focus()
+      if (errorSummary) errorSummary.focus()
+      else form.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus()
       return
     }
 
@@ -646,7 +646,8 @@ function initForm(form: HTMLFormElement): void {
     if (errorSummary) errorSummary.dataset.visible = 'false'
     if (status) {
       status.dataset.visible = 'true'
-      status.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      status.scrollIntoView({ block: 'nearest', behavior: reducedMotion ? 'auto' : 'smooth' })
     }
   })
 }

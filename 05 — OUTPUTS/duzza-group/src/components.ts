@@ -1,4 +1,4 @@
-import { brandingProjects, businesses, equipmentCategories, equipmentItems, homeProjects, whatsapp } from './data'
+import { brandingProjects, businesses, equipmentCategories, equipmentItems, homeServiceChapters } from './data'
 
 export function escapeHtml(value: string): string {
   return value
@@ -19,22 +19,6 @@ function chevron(): string {
 
 function arrow(): string {
   return `<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`
-}
-
-function instagramIcon(): string {
-  return `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor"/></svg>`
-}
-
-function linkedinIcon(): string {
-  return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 8.5v10m0-13.2v.2M10 18.5v-10m0 3.4c.7-1 1.9-1.7 3.4-1.7 2.5 0 4 1.6 4 4.6v4.7M10 11.9v6.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`
-}
-
-function xIcon(): string {
-  return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`
-}
-
-function whatsappIcon(): string {
-  return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5a8.3 8.3 0 0 0-7.1 12.6L3.5 20.5l4.5-1.3A8.3 8.3 0 1 0 12 3.5Zm0 1.8a6.5 6.5 0 0 1 5.1 10.5c-.5.6-1.2 1.1-2 1.4l-.6.2-1.4-.8a6.6 6.6 0 0 1-3.1.4l-.4.5c-.5.7-1.2 1.1-2.1 1.3l.4-1.7-.3-.4a6.5 6.5 0 0 1 3.9-11.4Zm-3.2 3.1c-.2 0-.5.1-.7.3-.3.3-1 .9-1 2.2s1 2.6 1.2 2.8c.2.2 2.1 3.4 5.2 4.6 2.5 1 3 .8 3.6.7.5-.1 1.7-.7 2-1.4.2-.7.2-1.3.1-1.4-.1-.2-.3-.3-.9-.6l-1.8-.9c-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-.3-.1-1.3-.5-2.5-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.6-.7c.2-.2.3-.3.4-.5.1-.2.1-.4 0-.6l-.8-1.9c-.2-.4-.4-.4-.6-.4h-.5Z" fill="currentColor"/></svg>`
 }
 
 export function eyebrow(text: string): string {
@@ -84,12 +68,12 @@ export function editorialGallery(items: EditorialGalleryItem[]): string {
 
 function megaBusinesses(): string {
   return `
-    <div class="mega-panel" id="mega-businesses" data-mega-panel data-mega="businesses" aria-hidden="true">
+    <div class="mega-panel" id="mega-businesses" data-mega-panel data-mega="businesses" aria-hidden="true" inert>
       <div class="mega-inner shell">
         <div class="mega-lead">
           ${eyebrow('Businesses')}
-          <h3>One group. Four directions.</h3>
-          <p>Engineering, survey, equipment, brand and consumer directions — connected by practical delivery.</p>
+          <h3>One Group,<br>Efficiency Across Industries</h3>
+          <p>Four connected areas, each with a clear role in delivering practical work.</p>
           ${buttonLink('About DUZZA GROUP', '/about/')}
         </div>
         <div class="mega-links">
@@ -97,7 +81,7 @@ function megaBusinesses(): string {
             <a class="mega-link" href="${escapeHtml(business.href)}">
               <span class="mega-link-index">${escapeHtml(business.eyebrow)}</span>
               <strong>${escapeHtml(business.title)} ${arrow()}</strong>
-              <span>${escapeHtml(business.description)}</span>
+              <span>${escapeHtml(business.menuSummary)}</span>
             </a>
           `).join('')}
         </div>
@@ -113,6 +97,10 @@ function megaBusinesses(): string {
 function mobileMenu(): string {
   return `
     <div class="mobile-menu" id="mobile-menu" data-mobile-menu aria-hidden="true" inert>
+      <div class="mobile-menu-top shell">
+        <span class="mobile-logo">DUZZA GROUP</span>
+        <button class="icon-button" type="button" data-menu-close aria-label="Close menu"><span aria-hidden="true">×</span></button>
+      </div>
       <nav class="mobile-nav shell" aria-label="Mobile primary">
         <a href="/about/">About</a>
         <div class="mobile-accordion" data-accordion>
@@ -162,32 +150,8 @@ export function renderHeader(): string {
   `
 }
 
-function socialIcons(): string {
-  const items = [
-    { label: 'Instagram', icon: instagramIcon() },
-    { label: 'LinkedIn', icon: linkedinIcon() },
-    { label: 'X', icon: xIcon() }
-  ]
-  return `
-    <div class="social-icons" role="group" aria-label="Social profiles">
-      ${items.map((item) => `<span class="social-icon" role="img" aria-label="${item.label}" title="${item.label}">${item.icon}</span>`).join('')}
-    </div>
-  `
-}
-
 export function renderWhatsApp(): string {
-  if (whatsapp.enabled && whatsapp.href) {
-    return `
-      <a class="whatsapp-fab" href="${escapeHtml(whatsapp.href)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHtml(whatsapp.label)}">
-        ${whatsappIcon()}<span>${escapeHtml(whatsapp.label)}</span>
-      </a>
-    `
-  }
-  return `
-    <button class="whatsapp-fab is-inactive" type="button" aria-disabled="true" title="${escapeHtml(whatsapp.inactiveLabel)}" aria-label="${escapeHtml(whatsapp.inactiveLabel)}">
-      ${whatsappIcon()}<span>${escapeHtml(whatsapp.inactiveLabel)}</span>
-    </button>
-  `
+  return ''
 }
 
 export function renderFooter(): string {
@@ -211,8 +175,10 @@ export function renderFooter(): string {
           <a href="/enquiries/general/">General enquiry</a>
         </div>
         <div class="footer-column">
-          <p class="footer-label">Follow</p>
-          ${socialIcons()}
+          <p class="footer-label">Group</p>
+          <a href="/about/">About DUZZA GROUP</a>
+          <a href="/work/">Selected work</a>
+          <a href="/contact/">Contact</a>
         </div>
       </div>
       <div class="shell footer-bottom">
@@ -277,37 +243,73 @@ export function processList(steps: { title: string; description: string; points:
   `
 }
 
-export function projectsScrollSection(): string {
+export function servicesScrollSection(): string {
+  const chapters = homeServiceChapters
+  const first = chapters[0]
+  const total = String(chapters.length).padStart(2, '0')
+
   return `
-    <section class="projects-scroll" data-projects-scroll aria-labelledby="projects-scroll-title">
-      <div class="shell projects-scroll-grid">
-        <div class="projects-scroll-copy">
-          <div class="projects-scroll-intro" data-reveal>
-            ${eyebrow('DUZZA Projects')}
-            <h2 id="projects-scroll-title">Work that moves from brief to delivery.</h2>
-            <p>Scroll to explore the services behind the group’s project work.</p>
+    <section class="services-scroll" data-services-scroll aria-labelledby="services-scroll-title">
+      <div class="shell">
+        <div class="services-scroll-head" data-reveal>
+          <div>
+            ${eyebrow('Across the group')}
+            <h2 id="services-scroll-title">What we offer in each business area.</h2>
           </div>
-          ${homeProjects.map((item, index) => `
-            <article class="scroll-item${index === 0 ? ' is-active' : ''}" data-scroll-item data-index="${index}">
-              <span class="scroll-number">0${index + 1}</span>
-              <div>
-                <p class="scroll-label">${escapeHtml(item.label)}</p>
-                <h3>${escapeHtml(item.title)}</h3>
-                <p>${escapeHtml(item.description)}</p>
-                <ul>${item.points.map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul>
-                <img class="scroll-mobile-image" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.title)}" loading="lazy">
-              </div>
-            </article>
-          `).join('')}
+          <p>Explore the exact services, skills and tools behind each area of the group. Scroll, or choose a direction to jump straight to it.</p>
         </div>
-        <div class="projects-scroll-visual" aria-hidden="true">
-          <div class="sticky-media">
-            ${homeProjects.map((item, index) => `
-              <img class="scroll-image${index === 0 ? ' is-active' : ''}" data-scroll-image data-index="${index}" src="${escapeHtml(item.image)}" alt="">
+
+        <div class="services-scroll-nav-wrap">
+          <div class="services-scroll-progress" aria-hidden="true"><span data-scroll-progress></span></div>
+          <nav class="services-scroll-nav" aria-label="Service categories">
+            ${chapters.map((chapter, index) => `
+              <button class="service-nav-button${index === 0 ? ' is-active' : ''}" type="button" data-scroll-jump="${index}" aria-current="${index === 0 ? 'step' : 'false'}">
+                <span>${String(index + 1).padStart(2, '0')}</span>${escapeHtml(chapter.shortTitle)}
+              </button>
             `).join('')}
-            <div class="scroll-media-caption">
-              <span data-scroll-count>01</span>
-              <span data-scroll-title>${escapeHtml(homeProjects[0].title)}</span>
+          </nav>
+        </div>
+
+        <div class="services-scroll-grid">
+          <div class="services-scroll-copy">
+            ${chapters.map((chapter, index) => `
+              <article class="service-chapter${index === 0 ? ' is-active' : ''}" id="service-${escapeHtml(chapter.id)}" data-service-item data-index="${index}">
+                <div class="service-chapter-rail" aria-hidden="true">
+                  <span class="service-chapter-number">${String(index + 1).padStart(2, '0')}</span>
+                  <span class="service-chapter-tick"></span>
+                </div>
+                <div class="service-chapter-body">
+                  <p class="service-chapter-kicker"><span>${escapeHtml(chapter.subsidiary)}</span><span>${escapeHtml(chapter.status)}</span></p>
+                  <p class="service-chapter-label">${escapeHtml(chapter.label)}</p>
+                  <h3>${escapeHtml(chapter.title)}</h3>
+                  <p class="service-chapter-description">${escapeHtml(chapter.description)}</p>
+                  <p class="service-skills-label">Skills and tools</p>
+                  <ul class="service-points">
+                    ${chapter.points.map((point) => `<li>${escapeHtml(point)}</li>`).join('')}
+                  </ul>
+                  <a class="service-chapter-link" href="${escapeHtml(chapter.href)}">${escapeHtml(chapter.action)}<span aria-hidden="true">↗</span></a>
+                  <img class="service-mobile-image" src="${escapeHtml(chapter.image)}" alt="${escapeHtml(chapter.imageAlt)}" loading="lazy">
+                </div>
+              </article>
+            `).join('')}
+          </div>
+
+          <div class="services-scroll-visual">
+            <div class="sticky-media">
+              <div class="scroll-image-stack" aria-hidden="true">
+                ${chapters.map((chapter, index) => `
+                  <img class="scroll-image${index === 0 ? ' is-active' : ''}" data-scroll-image data-index="${index}" src="${escapeHtml(chapter.image)}" alt="">
+                `).join('')}
+              </div>
+              <div class="scroll-media-meta" aria-hidden="true"><span data-scroll-count>01</span><span>/ ${total}</span></div>
+              <div class="scroll-media-caption" aria-hidden="true">
+                <span data-scroll-subsidiary>${escapeHtml(first.subsidiary)}</span>
+                <strong data-scroll-title>${escapeHtml(first.title)}</strong>
+              </div>
+              <div class="scroll-media-controls">
+                <button type="button" data-scroll-step="-1" aria-label="Previous service"><span aria-hidden="true">←</span></button>
+                <button type="button" data-scroll-step="1" aria-label="Next service"><span aria-hidden="true">→</span></button>
+              </div>
             </div>
           </div>
         </div>
