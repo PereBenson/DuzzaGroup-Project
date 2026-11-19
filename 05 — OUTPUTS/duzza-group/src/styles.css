@@ -221,32 +221,20 @@ ul {
   color: #fff;
 }
 
-.button-outline:hover {
-  border-color: var(--color-ink);
-  background: var(--color-ink);
-  color: var(--color-paper);
-}
-
-.button-light:hover {
-  border-color: #fff;
-  background: #fff;
-  color: var(--color-ink);
-}
-
-.button:hover span,
-.button:hover svg {
-  transform: translate(2px, -2px);
-}
-
 .button-outline,
 .button-light {
   background: transparent;
-  color: var(--color-ink);
+}
+
+.button-outline {
+  border-color: var(--color-signal);
+  color: var(--color-signal);
 }
 
 .button-outline:hover {
-  background: var(--color-ink);
-  color: var(--color-paper);
+  border-color: var(--color-signal);
+  background: var(--color-signal);
+  color: #fff;
 }
 
 .button-light {
@@ -258,6 +246,11 @@ ul {
   border-color: #fff;
   background: #fff;
   color: var(--color-ink);
+}
+
+.button:hover span,
+.button:hover svg {
+  transform: translate(2px, -2px);
 }
 
 .home-hero .button-outline,
@@ -4069,76 +4062,6 @@ body[data-page='food'] .page-hero-media img {
   .cta-inner {
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: end;
-  }
-
-  .home-hero {
-    min-height: 0;
-    margin-top: 0;
-    padding-top: var(--header-h);
-    background: var(--color-paper);
-    color: var(--color-ink);
-  }
-
-  .home-hero-inner {
-    min-height: clamp(30rem, 64vh, 44rem);
-    align-content: center;
-    padding-top: calc(var(--header-h) + 3rem);
-    padding-bottom: clamp(3rem, 6vh, 5rem);
-  }
-
-  .home-hero h1 {
-    color: var(--color-ink);
-    text-shadow: none;
-  }
-
-  .home-hero-sub {
-    color: var(--color-muted);
-    text-shadow: none;
-  }
-
-  .home-hero-cta .button {
-    border-color: var(--color-ink);
-    background: var(--color-ink);
-    color: var(--color-paper);
-  }
-
-  .home-hero-cta .button:hover {
-    border-color: var(--page-accent);
-    background: var(--page-accent);
-    color: #fff;
-  }
-
-  .home-hero-image {
-    position: relative;
-    inset: auto;
-    z-index: auto;
-    flex: none;
-    width: calc(100% - var(--gutter) * 2);
-    height: clamp(24rem, 52vh, 42rem);
-    min-height: 0;
-    margin: 0 auto clamp(2rem, 4vw, 4rem);
-  }
-
-  .home-hero-image::after {
-    background: linear-gradient(180deg, transparent 62%, rgb(8 12 11 / 0.62));
-  }
-
-  .hero-image-strip {
-    bottom: 1.25rem;
-  }
-
-  .hero-scroll-cue {
-    top: auto;
-    right: var(--gutter);
-    bottom: clamp(26rem, 54vh, 44rem);
-    max-width: 12rem;
-    color: var(--color-muted);
-    font-size: 0.62rem;
-    text-shadow: none;
-  }
-
-  .hero-scroll-cue svg {
-    display: none;
   }
 }
 

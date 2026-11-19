@@ -105,7 +105,7 @@ function heroSection(
           ${secondary ? buttonLink(secondary.label, secondary.href, 'outline') : ''}
         </div>
       </div>
-      <figure class="page-hero-media media-zoom" data-reveal>
+      <figure class="page-hero-media media-zoom">
         <img class="zoom-target" src="${image}" alt="${imageAlt}" />
         <figcaption class="hero-media-caption">${eyebrowText}</figcaption>
       </figure>
